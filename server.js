@@ -1,6 +1,7 @@
 import express from 'express';
 // This node version is what dictates that this need 'require' syntax, as opposed to import/export via Babel
 const app = express();
+app.use(express.static("public"));
 
 app.set('port', process.env.PORT || 3000); //Sets the port variable to be used later
 app.locals.title = 'Pet Box'; // Just giving a title to the app
