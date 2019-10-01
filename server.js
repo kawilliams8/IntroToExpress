@@ -5,10 +5,10 @@ const app = express();
 app.set('port', process.env.PORT || 3000); //Sets the port variable to be used later
 app.locals.title = 'Pet Box'; // Just giving a title to the app
 app.locals.pets = [ //Storing data in local variables, but not good for production code!
-  { id: 1, name: 'Buttermilk', type: 'dog' },
-  { id: 2, name: 'Uno', type: 'cat' },
-  { id: 3, name: 'Spaghetti', type: 'snake' },
-  { id: 4, name: 'Mort', type: 'moss ball' }
+  { id: 1, name: 'Buttermilk', type: 'dog', edited: false },
+  { id: 2, name: 'Uno', type: 'cat', edited: false },
+  { id: 3, name: 'Spaghetti', type: 'snake', edited: false },
+  { id: 4, name: 'Mort', type: 'moss ball', edited: false }
 ]
 app.use(express.json()); //Necessary for POSTing!!
 
@@ -67,6 +67,7 @@ app.put('/api/v1/pets/:id', (request, response) => {
   const id = parseInt(request.params.id);
   const petToUpdate = pets.find(pet => pet.id === id);
   petToUpdate.name = request.body.name;
+  petToUpdate.edited = true;
   const updatedPets = pets.map(pet => {
     return pet.id === id ? petToUpdate : pet ;
   });
@@ -89,6 +90,17 @@ app.delete('/api/v1/pets/:id', (request, response) => {
     } else {
       return response.status(422).json("Could not delete that pet");
     }
+});
+
+app.get('/api/v1/editedPets', (request, response) => {
+  const { pets } = app.locals;
+  const editedPets = pets.filter(pet => pet.edited);
+
+      if (editedPets) {
+        return response.status(200).json({ pets: editedPets });
+      } else {
+        return response.status(422).json("Could not find any edited pets");
+      }
 });
 
 app.listen(app.get('port'), () => { 
